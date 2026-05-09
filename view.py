@@ -8,6 +8,10 @@ from settings import SettingsFrame
 
 import theme
 
+LOGO_BASE_SIZE = 48
+LOGO_REFERENCE_SHORT_SIDE = 1080
+LOGO_MAX_SIZE = 112
+
 
 class BlockClockApp:
     def __init__(self):
@@ -20,6 +24,7 @@ class BlockClockApp:
         self.backlight_on = True
         self.resize_id = None
         self.updater = DataUpdater()
+        self.logo_size = None
 
         self.enabled_infos = [
             "Difficulty", "Halving", "Next Adjustment",
@@ -45,11 +50,12 @@ class BlockClockApp:
         self.root.grid_columnconfigure(2, weight=1)
 
     def create_labels(self):
-        image = Image.open("assets/bitcoin_logo.png").resize((48, 48))
-        self.logo_photo = ImageTk.PhotoImage(image)
-        self.logo_label = tk.Label(self.root, image=self.logo_photo, bg=theme.customizable_colors["background"])
+        self.logo_source_image = Image.open("assets/bitcoin_logo.png")
+        self.logo_photo = None
+        self.logo_label = tk.Label(self.root, bg=theme.customizable_colors["background"])
         self.logo_label.grid(row=0, column=2, padx=10, pady=10, sticky="ne")
         self.logo_label.bind("<Button-1>", self.settings_frame.show)
+        self.resize_logo()
 
         self.label_block_height = tk.Label(
             self.root, text="Loading...", font=theme.blockheight_font,
@@ -114,6 +120,25 @@ class BlockClockApp:
     def update_enabled_infos(self, selected):
         self.enabled_infos = selected
         self.update_data()
+
+    def resize_logo(self):
+        width = self.root.winfo_width() or self.root.winfo_screenwidth()
+        height = self.root.winfo_height() or self.root.winfo_screenheight()
+        if width <= 1 or height <= 1:
+            width = self.root.winfo_screenwidth()
+            height = self.root.winfo_screenheight()
+
+        short_side = max(1, min(width, height))
+        scale = LOGO_REFERENCE_SHORT_SIDE / short_side
+        size = min(LOGO_MAX_SIZE, max(LOGO_BASE_SIZE, int(LOGO_BASE_SIZE * scale)))
+
+        if size == self.logo_size:
+            return
+
+        self.logo_size = size
+        image = self.logo_source_image.resize((size, size))
+        self.logo_photo = ImageTk.PhotoImage(image)
+        self.logo_label.configure(image=self.logo_photo)
 
     def run(self):
         self.root.mainloop()

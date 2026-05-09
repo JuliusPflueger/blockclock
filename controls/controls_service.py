@@ -21,5 +21,9 @@ def schedule_resize(app):
         app.root.after_cancel(app.resize_id)
     app.resize_id = app.root.after(
         150,
-        lambda: view_utils.resize_fonts(app.root, app.label_block_height, *app.detail_labels)
+        lambda: resize_ui(app)
     )
+
+def resize_ui(app):
+    view_utils.resize_fonts(app.root, app.label_block_height, *app.detail_labels)
+    app.resize_logo()
