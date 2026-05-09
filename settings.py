@@ -1,6 +1,6 @@
 import tkinter as tk
 import tkinter.colorchooser as colorchooser
-from typing import Callable, Dict
+from typing import Callable, Dict, Optional, Tuple, Union
 import theme
 
 CANVAS_WIDTH = 150
@@ -28,7 +28,7 @@ def draw_rounded_rect(
         radius: int,
         fill: str,
         outline: str = None,
-        tags: str | tuple[str, ...] | None = None,
+        tags: Optional[Union[str, Tuple[str, ...]]] = None,
 ):
     if outline is None:
         outline = fill
@@ -256,7 +256,7 @@ class SettingsFrame(tk.Toplevel):
 
         self._tabs: Dict[str, tk.Label] = {}
         self._tab_frames: Dict[str, tk.Frame] = {}
-        self._active_tab: str | None = None
+        self._active_tab: Optional[str] = None
 
         self._build_ui()
         self._show_tab("Info")

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 import utils
 import client.mempool_client as mempool_client
@@ -14,8 +14,8 @@ class Snapshot:
     block_details: dict
     difficulty_information: dict
     mining_data: dict
-    tx_count_in_mempool: int | str
-    total_fees_in_mempool: int | float | str
+    tx_count_in_mempool: Union[int, str]
+    total_fees_in_mempool: Union[int, float, str]
     halving_progress: float
     blocks_until_halving: int
     total_fees_btc: float
