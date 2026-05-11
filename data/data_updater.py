@@ -1,11 +1,15 @@
 from __future__ import annotations
 
+import time
 from dataclasses import dataclass
 from typing import List, Tuple, Union
 
 import utils
 import client.mempool_client as mempool_client
 import client.blockstream_client as blockstream_client
+
+
+BLOCK_FETCH_RETRY_DELAY_SECONDS = 1
 
 
 @dataclass(frozen=True)
@@ -37,13 +41,38 @@ class Snapshot:
         return [text for name, text in self.details() if name in enabled_names]
 
 
+def _fetch_block_height() -> int:
+    while True:
+        try:
+            block_height = mempool_client.get_block_height()
+            if isinstance(block_height, int) and block_height > 0:
+                return block_height
+        except (mempool_client.requests.exceptions.RequestException, ValueError):
+            pass
+
+        time.sleep(BLOCK_FETCH_RETRY_DELAY_SECONDS)
+
+
+def _fetch_block_hash_and_details(block_height: int) -> Tuple[str, dict]:
+    while True:
+        try:
+            block_hash = blockstream_client.get_block_hash(block_height)
+            if block_hash:
+                block_details = blockstream_client.get_block_details(block_hash)
+                if isinstance(block_details, dict) and block_details:
+                    return block_hash, block_details
+        except (blockstream_client.requests.exceptions.RequestException, ValueError):
+            pass
+
+        time.sleep(BLOCK_FETCH_RETRY_DELAY_SECONDS)
+
+
 class DataUpdater:
     def fetch(self) -> Snapshot:
-        block_height = mempool_client.get_block_height()
+        block_height = _fetch_block_height()
         halving_progress, blocks_until_halving = utils.get_halving_progress(block_height)
 
-        block_hash = blockstream_client.get_block_hash(block_height)
-        block_details = blockstream_client.get_block_details(block_hash)
+        block_hash, block_details = _fetch_block_hash_and_details(block_height)
 
         difficulty_information = mempool_client.get_difficulty_information()
         mining_data = mempool_client.get_mining_data()
