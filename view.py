@@ -46,9 +46,10 @@ class BlockClockApp:
         self.root.bind("<Configure>", lambda event: controls_service.schedule_resize(self))
 
     def create_grid_layout(self):
-        self.root.grid_rowconfigure(0, weight=1, minsize=50)
         self.root.grid_rowconfigure(1, weight=3)
-        self.root.grid_rowconfigure(2, weight=3, minsize=400)
+        self.root.grid_rowconfigure(2, weight=1)
+        self.root.grid_rowconfigure(3, weight=3, minsize=400)
+        self.root.grid_rowconfigure(4, weight=1)
         self.root.grid_rowconfigure(3, weight=1)
         self.root.grid_columnconfigure(0, weight=1)
         self.root.grid_columnconfigure(1, weight=10)
@@ -66,10 +67,22 @@ class BlockClockApp:
             self.root, text="Loading...", font=theme.blockheight_font,
             fg=theme.customizable_colors["blockheight"], bg=theme.customizable_colors["background"]
         )
-        self.label_block_height.grid(row=1, column=1, sticky="nsew", padx=20, pady=20)
+        self.label_block_height.grid(row=1, column=1, sticky="nsew", padx=20, pady=(5))
+
+        self.label_last_block_time = tk.Label(
+            self.root,
+            text="",
+            font=theme.detail_font,
+            fg=theme.customizable_colors["text"],
+            bg=theme.customizable_colors["background"],
+            anchor="center",
+            justify="center"
+        )
+        self.label_last_block_time.grid(row=2, column=1, sticky="nsew", padx=20, pady=(0, 10))
+
 
         self.detail_frame = tk.Frame(self.root, bg=theme.customizable_colors["background"])
-        self.detail_frame.grid(row=2, column=1, sticky="nsew", padx=20, pady=20)
+        self.detail_frame.grid(row=3, column=1, sticky="nsew", padx=20, pady=10)
         self.detail_frame.grid_columnconfigure(0, weight=1)
         self.detail_frame.grid_columnconfigure(1, weight=1)
 
@@ -100,7 +113,7 @@ class BlockClockApp:
             fg=theme.customizable_colors["text"],
             bg=theme.customizable_colors["background"]
         )
-        self.label_last_updated.grid(row=3, column=1, sticky="nsew", padx=10, pady=(10, 20))
+        self.label_last_updated.grid(row=4, column=1, sticky="nsew", padx=10, pady=(10, 20))
 
     def update_data(self):
         try:
@@ -108,6 +121,9 @@ class BlockClockApp:
 
             # update UI
             self.label_block_height.config(text=str(snapshot.block_height))
+            self.label_last_block_time.config(
+                text=f"{snapshot.time_since_last_block_text}"
+            )
             self.label_last_updated.config(
                 text=f"Last update: {datetime.datetime.now().strftime('%H:%M:%S')}"
             )

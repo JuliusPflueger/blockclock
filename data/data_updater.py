@@ -15,6 +15,7 @@ BLOCK_FETCH_RETRY_DELAY_SECONDS = 1
 @dataclass(frozen=True)
 class Snapshot:
     block_height: int
+    time_since_last_block_text: str
     block_details: dict
     difficulty_information: dict
     mining_data: dict
@@ -67,6 +68,20 @@ def _fetch_block_hash_and_details(block_height: int) -> Tuple[str, dict]:
         time.sleep(BLOCK_FETCH_RETRY_DELAY_SECONDS)
 
 
+def get_time_since_last_block(block_details: dict) -> str:
+    timestamp = block_details.get("timestamp")
+
+    if timestamp is None:
+        return "N/A"
+
+    elapsed_seconds = int(time.time() - timestamp)
+
+    if elapsed_seconds < 60:
+        return f"{elapsed_seconds} sec ago"
+
+    return f"{elapsed_seconds // 60} min ago"
+
+
 class DataUpdater:
     def fetch(self) -> Snapshot:
         block_height = _fetch_block_height()
@@ -91,6 +106,7 @@ class DataUpdater:
 
         return Snapshot(
             block_height=block_height,
+            time_since_last_block_text=get_time_since_last_block(block_details),
             block_details=block_details,
             difficulty_information=difficulty_information,
             mining_data=mining_data,

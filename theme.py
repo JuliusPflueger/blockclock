@@ -1,6 +1,8 @@
 from tkinter import font
 import view_utils
 
+BLOCK_HEIGHT_FONT_SIZE = 300
+
 FAMILY = "Roboto"
 
 blockheight_font = None
@@ -30,7 +32,7 @@ def update_fonts(root):
 
     blockheight_font = font.Font(
         family=FAMILY,
-        size=view_utils.get_scaled_font(root, 300),
+        size=view_utils.get_scaled_font(root, BLOCK_HEIGHT_FONT_SIZE),
         weight="normal"
     )
 
