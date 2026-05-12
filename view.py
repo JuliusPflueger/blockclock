@@ -67,7 +67,7 @@ class BlockClockApp:
             self.root, text="Loading...", font=theme.blockheight_font,
             fg=theme.customizable_colors["blockheight"], bg=theme.customizable_colors["background"]
         )
-        self.label_block_height.grid(row=1, column=1, sticky="nsew", padx=20, pady=(5))
+        self.label_block_height.grid(row=1, column=1, sticky="nsew", padx=20)
 
         self.label_last_block_time = tk.Label(
             self.root,
@@ -78,7 +78,7 @@ class BlockClockApp:
             anchor="center",
             justify="center"
         )
-        self.label_last_block_time.grid(row=2, column=1, sticky="nsew", padx=20, pady=(0, 10))
+        self.label_last_block_time.grid(row=2, column=1, sticky="nsew", padx=20, pady=(0, 30))
 
 
         self.detail_frame = tk.Frame(self.root, bg=theme.customizable_colors["background"])
