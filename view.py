@@ -136,7 +136,7 @@ class BlockClockApp:
             logging.exception(f"Error fetching data: {e}")
             self.label_block_height.config(text="Error")
 
-        self.root.after(20000, self.update_data)
+        self.root.after(10000, self.update_data)
 
     def update_enabled_infos(self, selected):
         self.enabled_infos = selected
