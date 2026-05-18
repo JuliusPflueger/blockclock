@@ -15,5 +15,8 @@ def get_mempool_details():
 def get_transactions(block_hash):
     return requests.get(f"https://mempool.space/api/block/{block_hash}/txs").json()
 
+def get_block_details_v1(block_hash):
+    return requests.get(f"https://mempool.space/api/v1/block/{block_hash}").json()
+
 def get_price():
     return requests.get(f"https://mempool.space/api/v1/prices").json()

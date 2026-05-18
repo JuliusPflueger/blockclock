@@ -1,21 +1,14 @@
 import tkinter as tk
 import datetime
-import math
 import controls.controls_service as controls_service
 from data.data_updater import DataUpdater
 from PIL import Image, ImageTk
 import logging
-from screeninfo import get_monitors
 from settings import SettingsFrame
 
 import theme
 
-LOGO_BASE_SIZE = 48
-LOGO_REFERENCE_SHORT_SIDE = 1080
-LOGO_MAX_SIZE = 160
-LOGO_TARGET_MM = 18
-LOGO_SMALL_SCREEN_TARGET_MM = 22
-LOGO_SMALL_SCREEN_DIAGONAL_MM = 190
+LOGO_BASE_SIZE = 72
 
 
 class BlockClockApp:
@@ -29,7 +22,6 @@ class BlockClockApp:
         self.backlight_on = True
         self.resize_id = None
         self.updater = DataUpdater()
-        self.logo_size = None
 
         self.enabled_infos = [
             "Difficulty", "Halving", "Next Adjustment",
@@ -56,12 +48,12 @@ class BlockClockApp:
         self.root.grid_columnconfigure(2, weight=1)
 
     def create_labels(self):
-        self.logo_source_image = Image.open("assets/bitcoin_logo.png")
-        self.logo_photo = None
+        logo_image = Image.open("assets/bitcoin_logo.png").resize((LOGO_BASE_SIZE, LOGO_BASE_SIZE))
+        self.logo_photo = ImageTk.PhotoImage(logo_image)
         self.logo_label = tk.Label(self.root, bg=theme.customizable_colors["background"])
+        self.logo_label.configure(image=self.logo_photo)
         self.logo_label.grid(row=0, column=2, padx=10, pady=10, sticky="ne")
         self.logo_label.bind("<Button-1>", self.settings_frame.show)
-        self.resize_logo()
 
         self.label_block_height = tk.Label(
             self.root, text="Loading...", font=theme.blockheight_font,
@@ -122,7 +114,7 @@ class BlockClockApp:
             # update UI
             self.label_block_height.config(text=str(snapshot.block_height))
             self.label_last_block_time.config(
-                text=f"{snapshot.time_since_last_block_text}"
+                text=f"{snapshot.time_since_last_block_text} by {snapshot.block_finder_name}"
             )
             self.label_last_updated.config(
                 text=f"Last update: {datetime.datetime.now().strftime('%H:%M:%S')}"
@@ -141,74 +133,6 @@ class BlockClockApp:
     def update_enabled_infos(self, selected):
         self.enabled_infos = selected
         self.update_data()
-
-    def resize_logo(self):
-        monitor = self._get_active_monitor()
-        size = self._logo_size_from_physical_size(monitor)
-        if size is None:
-            size = self._logo_size_from_resolution()
-
-        if size == self.logo_size:
-            return
-
-        self.logo_size = size
-        image = self.logo_source_image.resize((size, size))
-        self.logo_photo = ImageTk.PhotoImage(image)
-        self.logo_label.configure(image=self.logo_photo)
-
-    def _get_active_monitor(self):
-        try:
-            self.root.update_idletasks()
-            window_x = self.root.winfo_x()
-            window_y = self.root.winfo_y()
-
-            monitors = get_monitors()
-            for monitor in monitors:
-                if (monitor.x <= window_x < monitor.x + monitor.width and
-                        monitor.y <= window_y < monitor.y + monitor.height):
-                    return monitor
-
-            return monitors[0] if monitors else None
-        except Exception:
-            return None
-
-    def _logo_size_from_physical_size(self, monitor):
-        if monitor is None:
-            return None
-
-        width_mm = getattr(monitor, "width_mm", 0) or 0
-        height_mm = getattr(monitor, "height_mm", 0) or 0
-        densities = []
-
-        if width_mm > 0:
-            densities.append(monitor.width / width_mm)
-        if height_mm > 0:
-            densities.append(monitor.height / height_mm)
-        if not densities:
-            return None
-
-        target_mm = LOGO_TARGET_MM
-        if width_mm > 0 and height_mm > 0:
-            diagonal_mm = math.sqrt(width_mm ** 2 + height_mm ** 2)
-            if diagonal_mm <= LOGO_SMALL_SCREEN_DIAGONAL_MM:
-                target_mm = LOGO_SMALL_SCREEN_TARGET_MM
-
-        pixels_per_mm = sum(densities) / len(densities)
-        return self._clamp_logo_size(int(target_mm * pixels_per_mm))
-
-    def _logo_size_from_resolution(self):
-        width = self.root.winfo_width() or self.root.winfo_screenwidth()
-        height = self.root.winfo_height() or self.root.winfo_screenheight()
-        if width <= 1 or height <= 1:
-            width = self.root.winfo_screenwidth()
-            height = self.root.winfo_screenheight()
-
-        short_side = max(1, min(width, height))
-        scale = LOGO_REFERENCE_SHORT_SIDE / short_side
-        return self._clamp_logo_size(int(LOGO_BASE_SIZE * scale))
-
-    def _clamp_logo_size(self, size):
-        return min(LOGO_MAX_SIZE, max(LOGO_BASE_SIZE, size))
 
     def run(self):
         self.root.mainloop()
@@ -229,6 +153,7 @@ class BlockClockApp:
         apply_bg_recursive(self.root)
 
         self.label_block_height.configure(fg=fg_blockheight)
+        self.label_last_block_time.configure(fg=fg_text)
         self.label_last_updated.configure(fg=fg_text)
         for label in self.detail_labels:
             label.configure(fg=fg_text)

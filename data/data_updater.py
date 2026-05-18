@@ -25,6 +25,7 @@ class Snapshot:
     blocks_until_halving: int
     total_fees_btc: float
     total_fees_usd: float
+    block_finder_name: str
 
     def details(self) -> List[Tuple[str, str]]:
         return [
@@ -82,6 +83,22 @@ def get_time_since_last_block(block_details: dict) -> str:
     return f"{elapsed_seconds // 60} min ago"
 
 
+def get_block_finder_name(block_hash: str) -> str:
+    try:
+        block_details = mempool_client.get_block_details_v1(block_hash)
+    except (mempool_client.requests.exceptions.RequestException, ValueError):
+        return "Unknown"
+
+    if not isinstance(block_details, dict):
+        return "Unknown"
+
+    pool = block_details.get("extras", {}).get("pool")
+    if not isinstance(pool, dict):
+        return "Unknown"
+
+    return pool.get("name") or "Unknown"
+
+
 class DataUpdater:
     def fetch(self) -> Snapshot:
         block_height = _fetch_block_height()
@@ -103,6 +120,7 @@ class DataUpdater:
         block_subsidy = utils.calculate_block_subsidy(block_height)
         total_fees_btc = total_block_reward - block_subsidy
         total_fees_usd = mempool_client.get_price().get("USD") * total_fees_btc
+        block_finder_name = get_block_finder_name(block_hash)
 
         return Snapshot(
             block_height=block_height,
@@ -116,4 +134,5 @@ class DataUpdater:
             blocks_until_halving=blocks_until_halving,
             total_fees_btc=total_fees_btc,
             total_fees_usd=total_fees_usd,
+            block_finder_name=block_finder_name,
         )

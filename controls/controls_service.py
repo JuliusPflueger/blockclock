@@ -26,4 +26,3 @@ def schedule_resize(app):
 
 def resize_ui(app):
     view_utils.resize_fonts(app.root, app.label_block_height, *app.detail_labels)
-    app.resize_logo()
