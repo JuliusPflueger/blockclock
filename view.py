@@ -70,7 +70,7 @@ class BlockClockApp:
             anchor="center",
             justify="center"
         )
-        self.label_last_block_time.grid(row=2, column=1, sticky="nsew", padx=20, pady=(0, 30))
+        self.label_last_block_time.grid(row=2, column=1, sticky="nsew", padx=20, pady=(0, 15))
 
 
         self.detail_frame = tk.Frame(self.root, bg=theme.customizable_colors["background"])
