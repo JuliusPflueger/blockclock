@@ -9,6 +9,7 @@ from settings import SettingsFrame
 import theme
 
 LOGO_BASE_SIZE = 72
+CURSOR_HIDE_DELAY_MS = 10_000
 
 
 class BlockClockApp:
@@ -21,6 +22,7 @@ class BlockClockApp:
         self.fullscreen = True
         self.backlight_on = True
         self.resize_id = None
+        self.cursor_hide_id = None
         self.updater = DataUpdater()
 
         self.enabled_infos = [
@@ -36,6 +38,21 @@ class BlockClockApp:
         self.update_data()
         controls_service.setup_key_bindings(self)
         self.root.bind("<Configure>", lambda event: controls_service.schedule_resize(self))
+        self.root.bind_all("<Motion>", self.reset_cursor_timeout, add="+")
+        self.hide_cursor()
+
+    def reset_cursor_timeout(self, event=None):
+        self.root.configure(cursor="")
+        self.hide_cursor_after_inactivity()
+
+    def hide_cursor_after_inactivity(self):
+        if self.cursor_hide_id is not None:
+            self.root.after_cancel(self.cursor_hide_id)
+        self.cursor_hide_id = self.root.after(CURSOR_HIDE_DELAY_MS, self.hide_cursor)
+
+    def hide_cursor(self):
+        self.cursor_hide_id = None
+        self.root.configure(cursor="none")
 
     def create_grid_layout(self):
         self.root.grid_rowconfigure(1, weight=3)
