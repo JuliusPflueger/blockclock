@@ -1,34 +1,48 @@
 from tkinter import font
 import view_utils
 
-BLOCK_HEIGHT_FONT_SIZE = 300
+BLOCK_HEIGHT_FONT_SIZE = 210
 
-FAMILY = "Roboto"
+# Tk falls back gracefully when a family is not installed.  These are the
+# platform fonts that get closest to the quiet, high-contrast system look.
+FAMILY = "SF Pro Display" if __import__("platform").system() == "Darwin" else "Roboto"
 
 blockheight_font = None
 detail_font = None
+card_value_font = None
+card_title_font = None
+eyebrow_font = None
 small_font = None
 small_font_italic = None
 tiny_font = None
 
 customizable_colors = {
-    "background": "#000000",
-    "text": "#7c8680",
-    "blockheight": "#e8eceb"
+    "background": "#0B0B0D",
+    "text": "#A1A1AA",
+    "blockheight": "#F5F5F7"
 }
 
+# This is a display preference rather than a color, but lives with the theme
+# because it controls how the dashboard surface is rendered.
+transparent_tiles = False
+
 default_colors = {
-    "frame_background": "#1e1e1e",
-    "white": "white",
+    "frame_background": "#17171B",
+    "card_background": "#17171B",
+    "card_border": "#2A2A30",
+    "white": "#F5F5F7",
+    "muted": "#8E8E93",
+    "subtle": "#63636B",
     "btc_orange": "#F7931A",
-    "red": "#ff3333",
+    "green": "#30D158",
+    "red": "#FF453A",
 }
 
 def init_fonts(root):
     update_fonts(root)
 
 def update_fonts(root):
-    global blockheight_font, detail_font, small_font, small_font_italic, tiny_font
+    global blockheight_font, detail_font, card_value_font, card_title_font, eyebrow_font, small_font, small_font_italic, tiny_font
 
     blockheight_font = font.Font(
         family=FAMILY,
@@ -38,10 +52,14 @@ def update_fonts(root):
 
     detail_font = font.Font(
         family=FAMILY,
-        size=view_utils.get_scaled_font(root, 45),
+        size=view_utils.get_scaled_font(root, 32),
         weight="normal"
     )
 
-    small_font = font.Font(family=FAMILY, size=view_utils.get_scaled_font(root, 25))
-    small_font_italic = font.Font(family=FAMILY, size=view_utils.get_scaled_font(root, 25), slant="italic")
-    tiny_font = font.Font(family=FAMILY, size=10)
+    card_value_font = font.Font(family=FAMILY, size=view_utils.get_scaled_font(root, 28), weight="bold")
+    card_title_font = font.Font(family=FAMILY, size=view_utils.get_scaled_font(root, 16), weight="normal")
+    eyebrow_font = font.Font(family=FAMILY, size=view_utils.get_scaled_font(root, 16), weight="bold")
+
+    small_font = font.Font(family=FAMILY, size=view_utils.get_scaled_font(root, 20))
+    small_font_italic = font.Font(family=FAMILY, size=view_utils.get_scaled_font(root, 18), slant="italic")
+    tiny_font = font.Font(family=FAMILY, size=view_utils.get_scaled_font(root, 14))

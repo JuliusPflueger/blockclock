@@ -1,4 +1,5 @@
 import view_utils
+import theme
 
 def setup_key_bindings(app):
     root = app.root
@@ -25,4 +26,8 @@ def schedule_resize(app):
     )
 
 def resize_ui(app):
-    view_utils.resize_fonts(app.root, app.label_block_height, *app.detail_labels)
+    view_utils.resize_fonts(app.root, app.label_block_height, app.label_last_block_time)
+    app.label_last_updated.config(font=theme.tiny_font)
+    for _card, title, value in app.detail_cards:
+        title.config(font=theme.card_title_font)
+        value.config(font=theme.card_value_font)

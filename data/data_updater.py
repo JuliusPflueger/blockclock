@@ -42,6 +42,20 @@ class Snapshot:
     def visible_detail_texts(self, enabled_names: List[str]) -> List[str]:
         return [text for name, text in self.details() if name in enabled_names]
 
+    def detail_cards(self, enabled_names: List[str]) -> List[Tuple[str, str]]:
+        """Return display-ready values without repeating the card title."""
+        values = {
+            "Difficulty": f"{self.block_details.get('difficulty', 0) / 1e12:.2f} T",
+            "Halving": f"{self.halving_progress:.2f}% ({self.blocks_until_halving})",
+            "Next Adjustment": f"{self.difficulty_information.get('progressPercent', 0):.2f}% ({self.difficulty_information.get('remainingBlocks', 0)})",
+            "Tx Count": f"{self.block_details.get('tx_count', 'N/A'):,}" if isinstance(self.block_details.get('tx_count'), int) else str(self.block_details.get('tx_count', 'N/A')),
+            "Txs (Mempool)": f"{self.tx_count_in_mempool:,}" if isinstance(self.tx_count_in_mempool, int) else str(self.tx_count_in_mempool),
+            "Block Fees": f"{self.total_fees_btc:.4f} BTC (${self.total_fees_usd:.2f})",
+            "Mempool Fees": f"{float(self.total_fees_in_mempool) / 1e8:.4f} BTC" if self.total_fees_in_mempool not in ("N/A", None) else "N/A",
+            "Hashrate": f"{self.mining_data.get('currentHashrate', 0) / 1e18:.2f} EH/s",
+        }
+        return [(name, values[name]) for name in enabled_names if name in values]
+
 
 def _fetch_block_height() -> int:
     while True:
