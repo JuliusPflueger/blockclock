@@ -7,6 +7,7 @@ from PIL import Image, ImageTk
 import controls.controls_service as controls_service
 import theme
 from data.data_updater import DataUpdater
+from data import status_reporter
 from settings import SettingsFrame
 
 
@@ -137,9 +138,14 @@ class BlockClockApp:
                     value.config(text=visible[index][1])
                 else:
                     card.grid_remove()
+            # This is deliberately written only after the visible labels have
+            # been updated
+            self.root.update_idletasks()
+            status_reporter.report_success(snapshot.block_height, snapshot.block_finder_name)
         except Exception as error:
             logging.exception("Error fetching data: %s", error)
             self.label_last_block_time.config(text="Unable to reach the Bitcoin network")
+            status_reporter.report_failure()
 
         self.update_after_id = self.root.after(10_000, self.update_data)
 
