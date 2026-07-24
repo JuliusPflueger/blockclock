@@ -102,10 +102,10 @@ class BlockClockApp:
         for index in range(8):
             card = self._card(self.detail_frame)
             card.grid(row=index // 4, column=index % 4, sticky="nsew", padx=7, pady=7)
-            title = tk.Label(card, text="", font=theme.card_title_font, anchor="center",
+            title = tk.Label(card, text="", font=theme.card_title_font, anchor="w",
                              fg=theme.default_colors["muted"], bg=theme.default_colors["card_background"])
             title.pack(fill="x", padx=22, pady=(20, 5))
-            value = tk.Label(card, text="—", font=theme.card_value_font, anchor="center", justify="center",
+            value = tk.Label(card, text="—", font=theme.card_value_font, anchor="w", justify="left",
                              fg=theme.customizable_colors["text"], bg=theme.default_colors["card_background"], wraplength=340)
             value.pack(fill="both", expand=True, padx=22, pady=(0, 16))
             self.detail_cards.append((card, title, value))
