@@ -34,7 +34,7 @@ class BlockClockApp:
         self.last_successful_refresh = "—"
         self.updater = DataUpdater()
         self.enabled_infos = [
-            "Txs Last Block", "Mempool Txs", "Fees Last Block", "Mempool Fees",
+            "Txs Last Block", "Fees Last Block", "Mempool Fees", "Mempool Txs",
             "Difficulty", "Halving", "Next Adjustment", "Hashrate"
         ]
 
@@ -110,7 +110,7 @@ class BlockClockApp:
             value.pack(fill="both", expand=True, padx=22, pady=(0, 16))
             self.detail_cards.append((card, title, value))
 
-        self.label_last_updated = tk.Label(self.root, text="LAST REFRESH · CONNECTING", font=theme.tiny_font,
+        self.label_last_updated = tk.Label(self.root, text="last refresh · connecting", font=theme.tiny_font,
                                            fg=theme.default_colors["subtle"], bg=theme.customizable_colors["background"])
         self.label_last_updated.grid(row=2, column=0, pady=(0, 22))
 
@@ -132,7 +132,7 @@ class BlockClockApp:
             self.label_block_height.config(text=str(snapshot.block_height))
             self.label_last_block_time.config(text=f"{snapshot.time_since_last_block_text}  ·  {snapshot.block_finder_name}")
             self.last_successful_refresh = datetime.datetime.now(LOS_ANGELES_TIMEZONE).strftime("%H:%M:%S")
-            self.label_last_updated.config(text=f"LAST REFRESH · {self.last_successful_refresh}")
+            self.label_last_updated.config(text=f"last refresh · {self.last_successful_refresh}")
 
             visible = snapshot.detail_cards(self.enabled_infos)
             for index, (card, title, value) in enumerate(self.detail_cards):
@@ -149,7 +149,7 @@ class BlockClockApp:
         except Exception as error:
             logging.exception("Error fetching data: %s", error)
             self.label_last_block_time.config(text="Unable to reach the Bitcoin network")
-            self.label_last_updated.config(text=f"LAST REFRESH · {self.last_successful_refresh} · RETRYING")
+            self.label_last_updated.config(text=f"last refresh · {self.last_successful_refresh} · retrying")
             status_reporter.report_failure()
 
         self.update_after_id = self.root.after(10_000, self.update_data)
