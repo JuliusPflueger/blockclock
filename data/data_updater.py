@@ -25,6 +25,7 @@ class Snapshot:
     blocks_until_halving: int
     total_fees_btc: float
     total_fees_usd: float
+    btc_price_usd: float
     block_finder_name: str
 
     def details(self) -> List[Tuple[str, str]]:
@@ -33,9 +34,9 @@ class Snapshot:
             ("Halving",         f"Halving: {self.halving_progress:.2f}% ({self.blocks_until_halving})"),
             ("Next Adjustment", f"Next Adj.: {self.difficulty_information.get('progressPercent', 0):.2f}% ({self.difficulty_information.get('remainingBlocks', 0)})"),
             ("Txs Last Block",  f"Tx's: {self.block_details.get('tx_count', 'N/A')}"),
-            ("Txs (Mempool)",   f"Tx's(MP): {self.tx_count_in_mempool}"),
+            ("Mempool Txs",     f"Tx's(MP): {self.tx_count_in_mempool}"),
             ("Fees Last Block", f"Fees: {self.total_fees_btc:.4f} BTC (${self.total_fees_usd:.2f})"),
-            ("Mempool Fees",    f"Total Fees(MP): {float(self.total_fees_in_mempool) / 1e8:.4f} BTC" if self.total_fees_in_mempool not in ("N/A", None) else "Total Fees(MP): N/A"),
+            ("Mempool Fees",    f"Total Fees(MP): {float(self.total_fees_in_mempool) / 1e8:.4f} BTC (${float(self.total_fees_in_mempool) / 1e8 * self.btc_price_usd:.2f})" if self.total_fees_in_mempool not in ("N/A", None) else "Total Fees(MP): N/A"),
             ("Hashrate",        f"Hashrate: {self.mining_data.get('currentHashrate', 0) / 1e18:.2f} EH/s"),
         ]
 
@@ -49,9 +50,9 @@ class Snapshot:
             "Halving": f"{self.halving_progress:.2f}% ({self.blocks_until_halving})",
             "Next Adjustment": f"{self.difficulty_information.get('progressPercent', 0):.2f}% ({self.difficulty_information.get('remainingBlocks', 0)})",
             "Txs Last Block": f"{self.block_details.get('tx_count', 'N/A'):,}" if isinstance(self.block_details.get('tx_count'), int) else str(self.block_details.get('tx_count', 'N/A')),
-            "Txs (Mempool)": f"{self.tx_count_in_mempool:,}" if isinstance(self.tx_count_in_mempool, int) else str(self.tx_count_in_mempool),
+            "Mempool Txs": f"{self.tx_count_in_mempool:,}" if isinstance(self.tx_count_in_mempool, int) else str(self.tx_count_in_mempool),
             "Fees Last Block": f"{self.total_fees_btc:.4f} BTC (${self.total_fees_usd:.2f})",
-            "Mempool Fees": f"{float(self.total_fees_in_mempool) / 1e8:.4f} BTC" if self.total_fees_in_mempool not in ("N/A", None) else "N/A",
+            "Mempool Fees": f"{float(self.total_fees_in_mempool) / 1e8:.4f} BTC (${float(self.total_fees_in_mempool) / 1e8 * self.btc_price_usd:.2f})" if self.total_fees_in_mempool not in ("N/A", None) else "N/A",
             "Hashrate": f"{self.mining_data.get('currentHashrate', 0) / 1e18:.2f} EH/s",
         }
         return [(name, values[name]) for name in enabled_names if name in values]
@@ -133,7 +134,8 @@ class DataUpdater:
 
         block_subsidy = utils.calculate_block_subsidy(block_height)
         total_fees_btc = total_block_reward - block_subsidy
-        total_fees_usd = mempool_client.get_price().get("USD") * total_fees_btc
+        btc_price_usd = mempool_client.get_price().get("USD")
+        total_fees_usd = btc_price_usd * total_fees_btc
         block_finder_name = get_block_finder_name(block_hash)
 
         return Snapshot(
@@ -148,5 +150,6 @@ class DataUpdater:
             blocks_until_halving=blocks_until_halving,
             total_fees_btc=total_fees_btc,
             total_fees_usd=total_fees_usd,
+            btc_price_usd=btc_price_usd,
             block_finder_name=block_finder_name,
         )

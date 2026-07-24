@@ -42,8 +42,8 @@ Open the settings by clicking the Bitcoin logo in the top-right corner.
 In the `Info` tab, you can choose which detail values are shown on the main screen:
 
 - `Txs Last Block`
+- `Mempool Txs`
 - `Fees Last Block`
-- `Txs (Mempool)`
 - `Mempool Fees`
 - `Difficulty`
 - `Halving`

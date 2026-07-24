@@ -1,6 +1,7 @@
 import datetime
 import logging
 import tkinter as tk
+from zoneinfo import ZoneInfo
 
 from PIL import Image, ImageTk
 
@@ -13,6 +14,7 @@ from settings import SettingsFrame
 
 LOGO_BASE_SIZE = 42
 CURSOR_HIDE_DELAY_MS = 10_000
+LOS_ANGELES_TIMEZONE = ZoneInfo("America/Los_Angeles")
 
 
 class BlockClockApp:
@@ -29,9 +31,10 @@ class BlockClockApp:
         self.resize_id = None
         self.cursor_hide_id = None
         self.update_after_id = None
+        self.last_successful_refresh = "—"
         self.updater = DataUpdater()
         self.enabled_infos = [
-            "Txs Last Block", "Fees Last Block", "Txs (Mempool)", "Mempool Fees",
+            "Txs Last Block", "Mempool Txs", "Fees Last Block", "Mempool Fees",
             "Difficulty", "Halving", "Next Adjustment", "Hashrate"
         ]
 
@@ -107,7 +110,7 @@ class BlockClockApp:
             value.pack(fill="both", expand=True, padx=22, pady=(0, 16))
             self.detail_cards.append((card, title, value))
 
-        self.label_last_updated = tk.Label(self.root, text="Updating…", font=theme.tiny_font,
+        self.label_last_updated = tk.Label(self.root, text="LAST REFRESH · CONNECTING", font=theme.tiny_font,
                                            fg=theme.default_colors["subtle"], bg=theme.customizable_colors["background"])
         self.label_last_updated.grid(row=2, column=0, pady=(0, 22))
 
@@ -128,7 +131,8 @@ class BlockClockApp:
             snapshot = self.updater.fetch()
             self.label_block_height.config(text=str(snapshot.block_height))
             self.label_last_block_time.config(text=f"{snapshot.time_since_last_block_text}  ·  {snapshot.block_finder_name}")
-            self.label_last_updated.config(text=f"Last refreshed {datetime.datetime.now().strftime('%H:%M:%S')}")
+            self.last_successful_refresh = datetime.datetime.now(LOS_ANGELES_TIMEZONE).strftime("%H:%M:%S")
+            self.label_last_updated.config(text=f"LAST REFRESH · {self.last_successful_refresh}")
 
             visible = snapshot.detail_cards(self.enabled_infos)
             for index, (card, title, value) in enumerate(self.detail_cards):
@@ -145,6 +149,7 @@ class BlockClockApp:
         except Exception as error:
             logging.exception("Error fetching data: %s", error)
             self.label_last_block_time.config(text="Unable to reach the Bitcoin network")
+            self.label_last_updated.config(text=f"LAST REFRESH · {self.last_successful_refresh} · RETRYING")
             status_reporter.report_failure()
 
         self.update_after_id = self.root.after(10_000, self.update_data)
