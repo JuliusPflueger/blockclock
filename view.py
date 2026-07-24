@@ -31,8 +31,8 @@ class BlockClockApp:
         self.update_after_id = None
         self.updater = DataUpdater()
         self.enabled_infos = [
-            "Difficulty", "Halving", "Next Adjustment", "Tx Count",
-            "Txs (Mempool)", "Block Fees", "Mempool Fees", "Hashrate"
+            "Txs Last Block", "Fees Last Block", "Txs (Mempool)", "Mempool Fees",
+            "Difficulty", "Halving", "Next Adjustment", "Hashrate"
         ]
 
         self.settings_frame = SettingsFrame(self.root, self)
@@ -79,7 +79,7 @@ class BlockClockApp:
         self.hero_card = self._card(self.content)
         self.hero_card.grid(row=0, column=0, sticky="ew", pady=(0, 18))
         self.hero_card.grid_columnconfigure(0, weight=1)
-        tk.Label(self.hero_card, text="CURRENT BLOCK", font=theme.eyebrow_font,
+        tk.Label(self.hero_card, text="LAST BLOCK", font=theme.eyebrow_font,
                  fg=theme.default_colors["muted"], bg=theme.default_colors["card_background"]).grid(row=0, column=0, pady=(28, 0))
         self.label_block_height = tk.Label(self.hero_card, text="—", font=theme.blockheight_font,
                                            fg=theme.customizable_colors["blockheight"], bg=theme.default_colors["card_background"])

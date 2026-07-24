@@ -32,9 +32,9 @@ class Snapshot:
             ("Difficulty",      f"Difficulty: {self.block_details.get('difficulty', 0) / 1e12:.2f} T"),
             ("Halving",         f"Halving: {self.halving_progress:.2f}% ({self.blocks_until_halving})"),
             ("Next Adjustment", f"Next Adj.: {self.difficulty_information.get('progressPercent', 0):.2f}% ({self.difficulty_information.get('remainingBlocks', 0)})"),
-            ("Tx Count",        f"Tx's: {self.block_details.get('tx_count', 'N/A')}"),
+            ("Txs Last Block",  f"Tx's: {self.block_details.get('tx_count', 'N/A')}"),
             ("Txs (Mempool)",   f"Tx's(MP): {self.tx_count_in_mempool}"),
-            ("Block Fees",      f"Fees: {self.total_fees_btc:.4f} BTC (${self.total_fees_usd:.2f})"),
+            ("Fees Last Block", f"Fees: {self.total_fees_btc:.4f} BTC (${self.total_fees_usd:.2f})"),
             ("Mempool Fees",    f"Total Fees(MP): {float(self.total_fees_in_mempool) / 1e8:.4f} BTC" if self.total_fees_in_mempool not in ("N/A", None) else "Total Fees(MP): N/A"),
             ("Hashrate",        f"Hashrate: {self.mining_data.get('currentHashrate', 0) / 1e18:.2f} EH/s"),
         ]
@@ -48,9 +48,9 @@ class Snapshot:
             "Difficulty": f"{self.block_details.get('difficulty', 0) / 1e12:.2f} T",
             "Halving": f"{self.halving_progress:.2f}% ({self.blocks_until_halving})",
             "Next Adjustment": f"{self.difficulty_information.get('progressPercent', 0):.2f}% ({self.difficulty_information.get('remainingBlocks', 0)})",
-            "Tx Count": f"{self.block_details.get('tx_count', 'N/A'):,}" if isinstance(self.block_details.get('tx_count'), int) else str(self.block_details.get('tx_count', 'N/A')),
+            "Txs Last Block": f"{self.block_details.get('tx_count', 'N/A'):,}" if isinstance(self.block_details.get('tx_count'), int) else str(self.block_details.get('tx_count', 'N/A')),
             "Txs (Mempool)": f"{self.tx_count_in_mempool:,}" if isinstance(self.tx_count_in_mempool, int) else str(self.tx_count_in_mempool),
-            "Block Fees": f"{self.total_fees_btc:.4f} BTC (${self.total_fees_usd:.2f})",
+            "Fees Last Block": f"{self.total_fees_btc:.4f} BTC (${self.total_fees_usd:.2f})",
             "Mempool Fees": f"{float(self.total_fees_in_mempool) / 1e8:.4f} BTC" if self.total_fees_in_mempool not in ("N/A", None) else "N/A",
             "Hashrate": f"{self.mining_data.get('currentHashrate', 0) / 1e18:.2f} EH/s",
         }

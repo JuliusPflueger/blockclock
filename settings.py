@@ -29,8 +29,8 @@ class ToggleSwitch(tk.Canvas):
 
 
 class SettingsFrame(tk.Toplevel):
-    INFO_LABELS = ["Difficulty", "Halving", "Next Adjustment", "Tx Count",
-                   "Txs (Mempool)", "Block Fees", "Mempool Fees", "Hashrate"]
+    INFO_LABELS = ["Txs Last Block", "Fees Last Block", "Txs (Mempool)", "Mempool Fees",
+                   "Difficulty", "Halving", "Next Adjustment", "Hashrate"]
 
     def __init__(self, parent, app):
         super().__init__(parent)

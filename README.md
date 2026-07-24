@@ -41,13 +41,13 @@ Open the settings by clicking the Bitcoin logo in the top-right corner.
 
 In the `Info` tab, you can choose which detail values are shown on the main screen:
 
+- `Txs Last Block`
+- `Fees Last Block`
+- `Txs (Mempool)`
+- `Mempool Fees`
 - `Difficulty`
 - `Halving`
 - `Next Adjustment`
-- `Tx Count`
-- `Txs (Mempool)`
-- `Block Fees`
-- `Mempool Fees`
 - `Hashrate`
 
 Enabled switches are shown on the main screen. Click `Apply` after changing the selection.
